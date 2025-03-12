@@ -1,0 +1,44 @@
+# Chargement des données
+library(readxl)
+df <- read_excel("nobel_winners.xlsx")
+
+# Traitement des données
+
+## Sélection de la colonne 'motivation' et suppression des NA
+motivations <- df %>% 
+  select(motivation) %>% 
+  drop_na()
+
+## Nettoyage du texte : conversion en minuscules, suppression de la ponctuation et des stopwords
+data("stop_words")  # Chargement des mots vides en anglais
+
+word_counts <- motivations %>%
+  unnest_tokens(word, motivation) %>%  # Séparation des mots
+  anti_join(stop_words, by = "word") %>%  # Suppression des stopwords
+  count(word, sort = TRUE)  # Comptage des occurrences des mots
+
+top_10_words <- word_counts %>% 
+  top_n(10, n)  # Sélection des 10 mots les plus fréquents
+
+print(top_10_words)
+
+# Représentations graphiques
+
+## Graphique de l'IA
+
+library(treemapify)
+
+ggplot(top_10_words, aes(area = n, fill = word, label = word)) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "bold", colour = "white", place = "centre") +
+  labs(title = "Treemap des mots les plus fréquents") +
+  theme_minimal()
+
+## Amélioration du graphique
+
+ggplot(top_10_words, aes(area = n, fill = word, label = paste(word, "\n", n))) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "bold", colour = "white", place = "centre") +
+  labs(title = "Treemap des mots les plus fréquents") +
+  theme_minimal()
+

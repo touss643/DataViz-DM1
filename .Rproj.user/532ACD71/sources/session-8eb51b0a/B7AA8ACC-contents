@@ -1,0 +1,40 @@
+library(tidyverse)
+library(GGally)
+library(gridExtra)
+
+lowerFn <- function(data, mapping) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.6) +
+    scale_color_gradient2(low = "#B2182B", midpoint = 1, high = "#2166AC")
+}
+
+upperFn <- function(data, mapping) {
+  ggplot(data = data, mapping = mapping) +
+    geom_point(alpha = 0.5) +
+    scale_color_manual(values = my_colors)
+}
+
+my_colors <- c(A = "green", B = "purple", C = "yellow")
+
+df <- data.frame(PC1 = rnorm(100), PC2 = rnorm(100), PC3 = rnorm(100), 
+                 type = sample(c("A", "B", "C"), 100, replace = TRUE), distance = rnorm(100))
+
+
+p <- ggpairs(df %>% select(starts_with("PC")),
+        lower = list(
+          mapping = aes(color = df$type),
+          continuous = upperFn
+        ),
+        upper = list(
+          mapping = aes(color = df$distance),
+          continuous = lowerFn
+        ),
+        diag = list(mapping = aes(fill = df$type)), legend = 1
+) +
+  theme_bw() +
+ # scale_fill_manual(values = my_colors) + labs(fill = "Type")
+
+  scale_fill_manual(values = my_colors, name = "Type") +
+  guides(color = guide_colorbar(order = 2), fill = guide_legend(order = 1))
+
+print(p)
