@@ -1,4 +1,8 @@
-# Chargement des données
+##########################################################
+################# Chargement des données #################
+##########################################################
+
+
 library(readxl)
 df <- read_excel("nobel_winners.xlsx")
 
@@ -122,6 +126,6 @@ df %>%
   scale_x_discrete(labels = nobel_categories_fr) +
   scale_fill_brewer(
     palette = "Set2",
-    name = "Genre",  # Titre
+    name = "Genre",  # Titre de légende
     labels = c("Female" = "Femmes", "Male" = "Hommes")  # Étiquettes
   )
